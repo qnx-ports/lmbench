@@ -148,7 +148,7 @@ cleanup(iter_t iterations, void *cookie)
 	free(state->buf);
 }
 
-static inline void delay(int nr_nop)
+static inline void lmbench_delay(int nr_nop)
 {
 	for (register int j = 0; j < nr_nop; j++)
 		asm volatile("nop");
@@ -165,7 +165,7 @@ rd(iter_t iterations, void *cookie)
 	while (iterations-- > 0) {
 	    register TYPE *p = state->buf;
 	    while (p <= lastone) {
-#define	DOIT(i)     sum += p[i]; delay(nr_nop);
+#define	DOIT(i)     sum += p[i]; lmbench_delay(nr_nop);
 		DOIT(0) DOIT(2) DOIT(4) DOIT(6) DOIT(8) DOIT(10) DOIT(12)
 		DOIT(14) DOIT(16) DOIT(18) DOIT(20) DOIT(22) DOIT(24) DOIT(26)
 		DOIT(28) DOIT(30) DOIT(32) DOIT(34) DOIT(36) DOIT(38) DOIT(40)
@@ -189,7 +189,7 @@ wr(iter_t iterations, void *cookie)
 	while (iterations-- > 0) {
 	    register TYPE *p = state->buf;
 	    while (p <= lastone) {
-#define	DOIT(i)	p[i] = 1; delay(nr_nop);
+#define	DOIT(i)	p[i] = 1; lmbench_delay(nr_nop);
 		DOIT(0) DOIT(2) DOIT(4) DOIT(6) DOIT(8) DOIT(10) DOIT(12)
 		DOIT(14) DOIT(16) DOIT(18) DOIT(20) DOIT(22) DOIT(24) DOIT(26)
 		DOIT(28) DOIT(30) DOIT(32) DOIT(34) DOIT(36) DOIT(38) DOIT(40)
@@ -212,7 +212,7 @@ fwr(iter_t iterations, void *cookie)
 	while (iterations-- > 0) {
 	    register TYPE *p = state->buf;
 	    while (p <= lastone) {
-#define	DOIT(i)	p[i] = 1; delay(nr_nop);
+#define	DOIT(i)	p[i] = 1; lmbench_delay(nr_nop);
 		DOIT(0) DOIT(1) DOIT(2) DOIT(3) DOIT(4) DOIT(5) DOIT(6)
 		DOIT(7) DOIT(8) DOIT(9) DOIT(10) DOIT(11) DOIT(12)
 		DOIT(13) DOIT(14) DOIT(15) DOIT(16) DOIT(17) DOIT(18)
@@ -243,7 +243,7 @@ frd(iter_t iterations, void *cookie)
 	while (iterations-- > 0) {
 	    register TYPE *p = state->buf;
 	    while (p <= lastone) {
-#define	DOIT(i)	sum += p[i]; delay(nr_nop);
+#define	DOIT(i)	sum += p[i]; lmbench_delay(nr_nop);
 		DOIT(0) DOIT(1) DOIT(2) DOIT(3) DOIT(4) DOIT(5) DOIT(6)
 		DOIT(7) DOIT(8) DOIT(9) DOIT(10) DOIT(11) DOIT(12)
 		DOIT(13) DOIT(14) DOIT(15) DOIT(16) DOIT(17) DOIT(18)

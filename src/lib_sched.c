@@ -25,6 +25,10 @@
 #include <sched.h>
 #endif
 
+#if defined(__QNX__)
+#include <sys/neutrino.h>
+#endif
+
 extern int custom(char* str, int cpu);
 extern int reverse_bits(int cpu);
 extern int sched_ncpus();
@@ -191,6 +195,10 @@ sched_pin(int cpu)
 #elif defined(HAVE_PROCESSOR_BIND)
 	/* Solaris interface */
 	retval = processor_bind(P_PID, P_MYPID, cpu, NULL);
+#elif defined(__QNX__)
+	/* QNX interface */
+	unsigned int runmask = 1 << cpu;
+	retval = ThreadCtl(_NTO_TCTL_RUNMASK, (void *)runmask);
 #elif defined(HAVE_SCHED_SETAFFINITY)
 	/* Linux interface */
 	static unsigned long* mask = NULL;

@@ -106,6 +106,17 @@ else
 fi
 rm -f ${BASE}$$ ${BASE}$$.o ${BASE}$$.c
 
+# check for -lpthread
+echo "#include <pthread.h>" >${BASE}$$.c
+echo "int main() { pthread_create(0, 0, 0, 0); return 0; }" >>${BASE}$$.c
+if ${CC} ${CFLAGS} -o ${BASE}$$ ${BASE}$$.c 1>${NULL} 2>${NULL}; then
+       true;
+else
+       ${CC} ${CFLAGS} -o ${BASE}$$ ${BASE}$$.c -lpthread 1>${NULL} 2>${NULL} \
+               && LDLIBS="${LDLIBS} -lpthread"
+fi
+rm -f ${BASE}$$ ${BASE}$$.o ${BASE}$$.c
+
 # check for -lrpc (cygwin/Windows)
 echo "extern int pmap_set(); int main() { pmap_set(); }" >${BASE}$$.c
 if ${CC} ${CFLAGS} -o ${BASE}$$ ${BASE}$$.c 1>${NULL} 2>${NULL}; then

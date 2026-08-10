@@ -100,18 +100,20 @@ echo \[RELEASE: `uname -r`] 1>&2
 echo \[VERSION: `uname -v`] 1>&2
 
 echo \[`date`] 1>&2
-echo \[`uptime`] 1>&2
-netstat -i | while read i
+uptime 2>/dev/null | while read line; do echo \[$line] 1>&2; done
+if [ -x /bin/netstat ] || [ -x /usr/bin/netstat ] || netstat -i >/dev/null 2>&1; then
+netstat -i 2>/dev/null | while read i
 do	echo \[net: "$i"] 1>&2
 	set `echo $i`
 	case $1 in
 	    *ame)	;;
-	    *)		ifconfig $1 | while read i
+	    *)		ifconfig $1 2>/dev/null | while read i
 			do echo \[if: "$i"] 1>&2
 			done
 			;;
 	esac
 done
+fi
 
 mount | while read i
 do	echo \[mount: "$i"] 1>&2
@@ -240,7 +242,8 @@ then	(cd ../../src && tar xf webpage-lm.tar)
 	sync
 	sleep 1
 fi
-SERVERS="lat_udp lat_tcp lat_rpc lat_connect bw_tcp"
+SERVERS="lat_udp lat_tcp lat_connect bw_tcp"
+if [ -f lat_rpc ]; then SERVERS="lat_rpc $SERVERS"; fi
 for server in $SERVERS; do $server -s; done
 DOCROOT=../../src/webpage-lm lmhttp 8008 &
 sleep 2;
@@ -255,11 +258,13 @@ if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_TCP = XYES ]; then
 fi
 lat_tcp -S localhost
 
-if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_RPC = XYES ]; then
-	lat_rpc -P $SYNC_MAX -p udp localhost
-	lat_rpc -P $SYNC_MAX -p tcp localhost
+if [ -f lat_rpc ]; then
+	if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_RPC = XYES ]; then
+		lat_rpc -P $SYNC_MAX -p udp localhost
+		lat_rpc -P $SYNC_MAX -p tcp localhost
+	fi
+	lat_rpc -S localhost
 fi
-lat_rpc -S localhost
 
 if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_CONNECT = XYES ]; then
 	if [ $SYNC_MAX = 1 ]; then lat_connect localhost; fi
@@ -303,11 +308,13 @@ do
 	fi
 	lat_tcp -S $remote;
 
-	if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_RPC = XYES ]; then
-		lat_rpc -P $SYNC_MAX -p udp $remote;
-		lat_rpc -P $SYNC_MAX -p tcp $remote;
-	fi 
-	lat_rpc -S $remote;
+	if [ -f lat_rpc ]; then
+		if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_RPC = XYES ]; then
+			lat_rpc -P $SYNC_MAX -p udp $remote;
+			lat_rpc -P $SYNC_MAX -p tcp $remote;
+		fi 
+		lat_rpc -S $remote;
+	fi
 
 	if [ X$BENCHMARK_OS = XYES -o X$BENCHMARK_CONNECT = XYES ]; then
 		if [ $SYNC_MAX = 1 ]; then lat_connect $remote; fi

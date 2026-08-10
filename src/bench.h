@@ -43,10 +43,14 @@ typedef unsigned char bool_t;
 #ifdef HAVE_SCHED_SETAFFINITY
 #include	<sched.h>
 #endif
+#ifndef NO_RPC
 #define PORTMAP
 #include	<rpc/rpc.h>
 #endif
+#endif
+#ifndef NO_RPC
 #include	<rpc/types.h>
+#endif
 
 #include 	<stdarg.h>
 #ifndef HAVE_uint
@@ -356,10 +360,12 @@ extern int handle_scheduler(int childno, int benchproc, int nbenchprocs);
 
 #define XACT_PROG ((u_long)404040)
 #define XACT_VERS ((u_long)1)
+#ifndef NO_RPC
 #define RPC_XACT ((u_long)1)
 #define RPC_EXIT ((u_long)2)
 extern char *rpc_xact_1(char *msg, register SVCXPRT *transp);
 extern char *client_rpc_xact_1(char *argp, CLIENT *clnt);
+#endif
 
 void lmbench_usage(int argc, char *argv[], char* usage);
 

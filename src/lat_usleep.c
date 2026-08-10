@@ -31,6 +31,12 @@ char           *id = "$Id$\n";
 
 #include "bench.h"
 #include <sched.h>
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 typedef     enum {USLEEP, NANOSLEEP, SELECT, PSELECT, ITIMER} timer_e;
 
