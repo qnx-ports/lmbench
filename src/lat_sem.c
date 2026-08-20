@@ -87,6 +87,10 @@ initialize(iter_t iterations, void* cookie)
 
 #ifdef __QNX__
 	state->semid = (sem_t*)mmap(0, 2 * sizeof(sem_t), PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANON, -1, 0);
+	if (state->semid == MAP_FAILED) {
+		perror("mmap");
+		exit(1);
+	}
 	sem_init(&state->semid[0], 1, 0);
 	sem_init(&state->semid[1], 1, 0);
 #else
