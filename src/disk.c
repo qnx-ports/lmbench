@@ -58,7 +58,7 @@ zone(char *disk, int oflag, int bsize)
 		exit(1);
 	}
 	bzero(buf, bsize);
-#ifdef	linux
+#if defined(linux) || defined(__QNX__)
 	flushdisk(fd);
 #endif
 
@@ -150,7 +150,7 @@ seek(char *disk, int oflag)
 		perror(disk);
 		return (-1);
 	}
-#ifdef	linux
+#if defined(linux) || defined(__QNX__)
 	flushdisk(fd);
 #endif
 	size = disksize(disk);

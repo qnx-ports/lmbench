@@ -1,6 +1,6 @@
-#ifdef	linux
+#if defined(linux) || defined(__QNX__)
 /*
- * flushdisk() - linux block cache clearing
+ * flushdisk() - block cache clearing
  */
 
 #include	<stdio.h>
@@ -8,15 +8,43 @@
 #include	<fcntl.h>
 #include	<unistd.h>
 #include	<stdlib.h>
+
+#ifdef linux
 #include	<sys/ioctl.h>
 #include	<sys/mount.h>
+#endif
+
+#ifdef __QNX__
+#include	<string.h>
+#include	<errno.h>
+#include	<devctl.h>
+#include	<sys/dcmd_blk.h>
+#endif
 
 int
 flushdisk(int fd)
 {
+#ifdef linux
 	int	ret = ioctl(fd, BLKFLSBUF, 0);
 	usleep(100000);
 	return (ret);
+#elif defined(__QNX__)
+	pgcache_ctl_t ctl;
+	int ret;
+
+	memset(&ctl, 0, sizeof(ctl));
+	ctl.op = DCMD_FSYS_PGCACHE_CTL_OP_DISCARD;
+
+	ret = devctl(fd, DCMD_FSYS_PGCACHE_CTL, &ctl, sizeof(ctl), NULL);
+	usleep(100000);
+
+	if (ret != EOK) {
+		errno = ret;
+		return -1;
+	}
+
+	return 0;
+#endif
 }
 
 #endif
@@ -25,7 +53,7 @@ flushdisk(int fd)
 int
 main(int ac, char **av)
 {
-#ifdef	linux
+#if defined(linux) || defined(__QNX__)
 	int	fd;
 	int	i;
 
