@@ -45,12 +45,14 @@ tcp_server(int prog, int rdwr)
 #ifdef	LIBTCP_VERBOSE
 		fprintf(stderr, "Server port %d\n", sockport(sock));
 #endif
+#ifndef NO_RPC
 		(void)pmap_unset((u_long)prog, (u_long)1);
 		if (!pmap_set((u_long)prog, (u_long)1, (u_long)IPPROTO_TCP,
 		    (unsigned short)sockport(sock))) {
 			perror("pmap_set");
 			exit(5);
 		}
+#endif
 	}
 	return (sock);
 }
@@ -62,7 +64,9 @@ int
 tcp_done(int prog)
 {
 	if (prog > 0) {
+#ifndef NO_RPC
 		pmap_unset((u_long)prog, (u_long)1);
+#endif
 	}
 	return (0);
 }
@@ -160,6 +164,7 @@ tcp_connect(char *host, int prog, int rdwr)
 		s.sin_family = AF_INET;
 		bcopy((void*)h->h_addr, (void *)&s.sin_addr, h->h_length);
 		if (prog > 0) {
+#ifndef NO_RPC
 			save_port = pmap_getport(&s, prog,
 			    (u_long)1, IPPROTO_TCP);
 			if (!save_port) {
@@ -170,6 +175,7 @@ tcp_connect(char *host, int prog, int rdwr)
 			fprintf(stderr, "Server port %d\n", save_port);
 #endif
 			s.sin_port = htons(save_port);
+#endif
 		} else {
 			s.sin_port = htons(-prog);
 		}

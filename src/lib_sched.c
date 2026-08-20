@@ -198,7 +198,7 @@ sched_pin(int cpu)
 #elif defined(__QNX__)
 	/* QNX interface */
 	unsigned int runmask = 1 << cpu;
-	retval = ThreadCtl(_NTO_TCTL_RUNMASK, (void *)runmask);
+	retval = ThreadCtl(_NTO_TCTL_RUNMASK, (void *)(uintptr_t)runmask);
 #elif defined(HAVE_SCHED_SETAFFINITY)
 	/* Linux interface */
 	static unsigned long* mask = NULL;

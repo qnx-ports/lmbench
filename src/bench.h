@@ -360,9 +360,9 @@ extern int handle_scheduler(int childno, int benchproc, int nbenchprocs);
 
 #define XACT_PROG ((u_long)404040)
 #define XACT_VERS ((u_long)1)
-#ifndef NO_RPC
 #define RPC_XACT ((u_long)1)
 #define RPC_EXIT ((u_long)2)
+#ifndef NO_RPC
 extern char *rpc_xact_1(char *msg, register SVCXPRT *transp);
 extern char *client_rpc_xact_1(char *argp, CLIENT *clnt);
 #endif
